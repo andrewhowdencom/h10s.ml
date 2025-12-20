@@ -1,0 +1,9 @@
+tensorflow>=2.10.0
+numpy
+pandas
+scipy
+wfdb
+scikit-learn
+pytest
+flake8
+black
