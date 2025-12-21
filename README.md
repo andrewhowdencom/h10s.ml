@@ -52,12 +52,21 @@ docker build -t ecg-classifier .
 
 The project now supports ingesting the **PTB-XL** dataset and transforming it into **EDF+** files.
 
-1. Download the PTB-XL dataset (e.g., from PhysioNet).
+1. Download and extract the PTB-XL dataset:
+
+```bash
+# Download dataset (approx 3GB)
+wget -O ptb-xl-1.0.3.zip https://physionet.org/content/ptb-xl/get-zip/1.0.3/
+
+# Unzip
+unzip ptb-xl-1.0.3.zip
+```
+
 2. Run the processing script to generate `train.edf`, `val.edf`, and `test.edf`.
 
 ```bash
 # Convert PTB-XL to EDF+
-python src/data/make_dataset.py --input_dir /path/to/ptbxl --output_dir data/processed --fs 100
+python src/data/make_dataset.py --input_dir ptb-xl-1.0.3 --output_dir data/processed --fs 100
 ```
 
 ### 3. Train the Model
