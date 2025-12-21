@@ -1,6 +1,7 @@
 import os
 import argparse
 import subprocess
+import numpy as np
 import tensorflow as tf
 from src.data.loader import load_data
 from src.models.cnn import build_cnn_model
@@ -28,7 +29,7 @@ def train(data_dir, epochs, batch_size):
 
     # 2. Build Model
     input_shape = X_train.shape[1:]
-    num_classes = len(SCP_CODES)
+    num_classes = y_train.shape[1]
 
     print(f"Building model with input shape {input_shape} and {num_classes} classes...")
     model = build_cnn_model(input_shape, num_classes)
@@ -48,14 +49,22 @@ def train(data_dir, epochs, batch_size):
             patience=5,
             restore_best_weights=True
         ),
+        tf.keras.callbacks.ReduceLROnPlateau(
+            monitor='val_loss',
+            factor=0.1,
+            patience=3,
+            min_lr=1e-6,
+            verbose=1
+        ),
         tf.keras.callbacks.TensorBoard(log_dir='./logs')
     ]
 
     # 4. Train
-    print("Starting training...")
+    print("Starting training (with Focal Loss)...")
 
     validation_data = (X_test, y_test) if len(X_test) > 0 else None
 
+    # Note: We removed manual sample_weight in favor of Focal Loss in the model definition
     history = model.fit(
         X_train, y_train,
         validation_data=validation_data,

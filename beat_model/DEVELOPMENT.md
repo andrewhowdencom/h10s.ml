@@ -25,7 +25,7 @@ source .venv/bin/activate && \
         --input_dir ptb-xl-1.0.3 \
         --output_dir data/processed \
         --target_fs 130
-    && python -m src.train --epochs 10 --batch_size 32
+    && python -m src.train --epochs 50 --batch_size 32
 ```
 
 ## 2. Dataset Preparation (PTB-XL)
@@ -50,8 +50,10 @@ python -m src.data.make_dataset --input_dir ptb-xl-1.0.3 --output_dir data/proce
 Run the training script to train the CNN and automatically export a TFLite model.
 
 ```bash
-python -m src.train --epochs 10 --batch_size 32
+python -m src.train --epochs 50 --batch_size 32
 ```
+
+> **Tip:** The model employs `EarlyStopping` with a patience of 5 epochs. It is recommended to set `--epochs` to a high value (e.g., 50). Training will halt automatically once the model converges, ensuring you get the best possible weights without overfitting.
 
 ### Outputs
 *   **Keras Model**: `models/final_model.keras`

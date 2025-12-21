@@ -22,78 +22,29 @@ This repository contains the scaffolding for training a 1D Convolutional Neural 
 └── tests/                  # Unit tests
 ```
 
+## Technical Approach
+
+### 1. Model Architecture: 1D CNN
+We utilize a **1D Convolutional Neural Network (CNN)**. Unlike traditional 2D CNNs used for images, 1D CNNs are highly effective for extracting features from sequential time-series data like ECGs. They can learn morphological patterns (QRS complexes, P-waves, T-waves) directly from the raw signal without manual feature engineering.
+
+### 2. On-Device Inference: TFLite & Quantization
+The model is exported to **TensorFlow Lite (TFLite)** for efficient execution on Android devices. We apply **Dynamic Range Quantization**, which converts weights to 8-bit integers while keeping activations in floating-point. This reduces model size by ~4x (from ~255KB to ~65KB) with negligible accuracy loss, critical for battery-constrained mobile use.
+
+### 3. Data Constraints: Polar H10
+The data pipeline is strictly tailored to the **Polar H10** heart rate sensor:
+*   **Single Lead**: We isolate **Lead I** from the 12-lead PTB-XL dataset, as the Polar H10 simulates a single-lead ECG.
+*   **Sample Rate**: We resample all training data to **130 Hz**, matching the fixed output rate of the Polar H10. This ensures the model sees the exact same signal resolution during inference as it did during training.
+
 ## Getting Started
 
-### 1. Environment Setup
+For comprehensive instructions on environment setup, data preparation, training, and testing, please refer to the [Development Guide](DEVELOPMENT.md).
 
-It is recommended to use a virtual environment or Docker.
+### Quick Links
 
-**Using venv:**
-
-```bash
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
-# Note: On Linux, you may need python3-dev for pyedflib:
-# sudo apt-get install python3-dev
-pip install -r requirements.txt
-```
-
-**Using Docker:**
-
-```bash
-# Build the image
-docker build -t ecg-classifier .
-```
-
-### 2. Prepare Data (PTB-XL to EDF+)
-
-The project now supports ingesting the **PTB-XL** dataset and transforming it into **EDF+** files.
-
-1. Download and extract the PTB-XL dataset:
-
-```bash
-# Download dataset (approx 3GB)
-wget -O ptb-xl-1.0.3.zip https://physionet.org/content/ptb-xl/get-zip/1.0.3/
-
-# Unzip
-unzip ptb-xl-1.0.3.zip
-```
-
-2. Run the processing script to generate `train.edf`, `val.edf`, and `test.edf`.
-
-```bash
-# Convert PTB-XL to EDF+
-# Defaults to 130Hz and Lead I (Polar H10 compliant)
-python -m src.data.make_dataset --input_dir ptb-xl-1.0.3 --output_dir data/processed
-```
-
-This will:
-1. Extract **Lead I** (analogous to chest strap).
-2. Resample data to **130 Hz** (Polar H10 sampling rate).
-3. Merge recordings into continuous EDF+ files.
-
-To train the model using the processed data:
-
-```bash
-python -m src.train --epochs 5
-```
-
-**Using Docker to train:**
-
-```bash
-docker run -v $(pwd)/models:/app/models ecg-classifier
-```
-
-### 4. Running Tests
-
-To ensure everything is working correctly:
-
-```bash
-pytest tests/
-```
+- [Environment Setup](DEVELOPMENT.md#1-environment-setup)
+- [Dataset Preparation](DEVELOPMENT.md#2-dataset-preparation-ptb-xl)
+- [Training & Export](DEVELOPMENT.md#3-training--tflite-export)
+- [Running Inference](DEVELOPMENT.md#5-running-inference)
 
 ## Roadmap
 

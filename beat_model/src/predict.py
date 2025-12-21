@@ -102,7 +102,8 @@ def main():
 
             code = SCP_CODES[c]
             desc = SCP_DESCRIPTIONS.get(code, "Unknown")
-            print(f"Window {i} [{time_str}]: {code} ({desc})")
+            confidence = preds[i, c] * 100
+            print(f"Window {i} [{time_str}]: {code} ({desc}) - {confidence:.1f}%")
 
         unique, counts = np.unique(classes, return_counts=True)
         print("\nClass distribution:")
