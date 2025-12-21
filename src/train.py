@@ -1,5 +1,6 @@
 import os
 import argparse
+import subprocess
 import tensorflow as tf
 from src.data.loader import load_data
 from src.models.cnn import build_cnn_model
@@ -67,6 +68,32 @@ def train(data_dir, epochs, batch_size):
     final_model_path = "models/final_model.keras"
     model.save(final_model_path)
     print(f"Model saved to {final_model_path}")
+
+    # 6. Convert to TFLite
+    print("Converting to TFLite...")
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    tflite_model = converter.convert()
+
+    # Get git hash
+    def get_git_version():
+        try:
+            cmd = "git rev-parse --short HEAD"
+            revision = subprocess.check_output(cmd.split()).strip().decode('utf-8')
+            cmd = "git status --porcelain"
+            status = subprocess.check_output(cmd.split()).strip().decode('utf-8')
+            if status:
+                revision += "-dirty"
+            return revision
+        except Exception:
+            return "unknown"
+
+    git_version = get_git_version()
+    tflite_model_path = f"models/model_{git_version}.tflite"
+    
+    with open(tflite_model_path, "wb") as f:
+        f.write(tflite_model)
+    print(f"TFLite model saved to {tflite_model_path}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train the ECG classification model.")

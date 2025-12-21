@@ -67,7 +67,7 @@ unzip ptb-xl-1.0.3.zip
 ```bash
 # Convert PTB-XL to EDF+
 # Defaults to 130Hz and Lead I (Polar H10 compliant)
-python src/data/make_dataset.py --input_dir ptb-xl-1.0.3 --output_dir data/processed
+python -m src.data.make_dataset --input_dir ptb-xl-1.0.3 --output_dir data/processed
 ```
 
 This will:
@@ -78,7 +78,7 @@ This will:
 To train the model using the processed data:
 
 ```bash
-python src/train.py --epochs 5
+python -m src.train --epochs 5
 ```
 
 **Using Docker to train:**

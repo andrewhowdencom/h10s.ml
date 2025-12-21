@@ -118,7 +118,7 @@ def load_data(data_dir="data/processed"):
     try:
         X_train, y_train = load_edf_file(train_path)
     except FileNotFoundError:
-         raise FileNotFoundError(f"Data not found in {data_dir}. Please run 'python src/data/make_dataset.py --input_dir <PTB-XL>' first.")
+         raise FileNotFoundError(f"Data not found in {data_dir}. Please run 'python -m src.data.make_dataset --input_dir <PTB-XL>' first.")
 
     print(f"Loading {test_path}...")
     if os.path.exists(test_path):
