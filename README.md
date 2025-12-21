@@ -66,10 +66,14 @@ unzip ptb-xl-1.0.3.zip
 
 ```bash
 # Convert PTB-XL to EDF+
-python src/data/make_dataset.py --input_dir ptb-xl-1.0.3 --output_dir data/processed --fs 100
+# Defaults to 130Hz and Lead I (Polar H10 compliant)
+python src/data/make_dataset.py --input_dir ptb-xl-1.0.3 --output_dir data/processed
 ```
 
-### 3. Train the Model
+This will:
+1. Extract **Lead I** (analogous to chest strap).
+2. Resample data to **130 Hz** (Polar H10 sampling rate).
+3. Merge recordings into continuous EDF+ files.
 
 To train the model using the processed data:
 

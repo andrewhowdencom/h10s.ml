@@ -63,6 +63,17 @@ def test_edf_pipeline():
     print(f"Loaded shapes: X_train={X_train.shape}, y_train={y_train.shape}")
     
     # Assertions
+    # We wrote 100Hz, but loader reads whatever fs is in file
+    # Wait, my verification script creates dummy data using 'write_edf' directly with fs=100
+    # It does NOT call 'process_ptbxl_data' which does the resampling.
+    # So this test validates 'write_edf' and 'load_data' generic capability.
+    
+    # To test resampling, I should perhaps update this test to use resampling?
+    # Or just ensure write_edf handles the data I give it.
+    
+    # Let's keep this test as "pipeline generic integrity" 
+    # But I should verify that X_train matches the input dimensions.
+    
     assert X_train.shape == (n_records, n_samples, n_channels)
     assert y_train.shape == (n_records,)
     
