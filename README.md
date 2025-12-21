@@ -36,6 +36,8 @@ python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install dependencies
+# Note: On Linux, you may need python3-dev for pyedflib:
+# sudo apt-get install python3-dev
 pip install -r requirements.txt
 ```
 
@@ -46,13 +48,16 @@ pip install -r requirements.txt
 docker build -t ecg-classifier .
 ```
 
-### 2. Prepare Data
+### 2. Prepare Data (PTB-XL to EDF+)
 
-Currently, the project uses a script to generate dummy data for testing the pipeline. In the future, this will ingest real ECG data (e.g., PTB-XL).
+The project now supports ingesting the **PTB-XL** dataset and transforming it into **EDF+** files.
+
+1. Download the PTB-XL dataset (e.g., from PhysioNet).
+2. Run the processing script to generate `train.edf`, `val.edf`, and `test.edf`.
 
 ```bash
-# Generate dummy data
-python src/data/make_dataset.py
+# Convert PTB-XL to EDF+
+python src/data/make_dataset.py --input_dir /path/to/ptbxl --output_dir data/processed --fs 100
 ```
 
 ### 3. Train the Model
@@ -79,6 +84,6 @@ pytest tests/
 
 ## Roadmap
 
-- [ ] Integrate real PTB-XL dataset ingestion.
+- [x] Integrate real PTB-XL dataset ingestion.
 - [ ] Implement advanced preprocessing (filtering, beat segmentation).
 - [ ] Tune hyperparameters for the 1D CNN.
