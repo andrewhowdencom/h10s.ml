@@ -37,14 +37,18 @@ def build_cnn_model(input_shape, num_classes):
     x = layers.Dense(64, activation='relu')(x)
     x = layers.Dropout(0.5)(x)
 
-    outputs = layers.Dense(num_classes, activation='softmax')(x)
+    outputs = layers.Dense(num_classes, activation='sigmoid')(x)
 
     model = models.Model(inputs=inputs, outputs=outputs, name="ECG_CNN_Model")
 
     model.compile(
         optimizer='adam',
-        loss='sparse_categorical_crossentropy',
-        metrics=['accuracy']
+        loss='binary_crossentropy',
+        metrics=[
+            'binary_accuracy',
+            tf.keras.metrics.AUC(name='auc', multi_label=True),
+            tf.keras.metrics.F1Score(name='f1_score', average='macro', threshold=0.5)
+        ]
     )
 
     return model

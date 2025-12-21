@@ -3,6 +3,7 @@ import argparse
 import tensorflow as tf
 from src.data.loader import load_data
 from src.models.cnn import build_cnn_model
+from src.data.scp_codes import SCP_CODES
 
 def train(data_dir, epochs, batch_size):
     """
@@ -17,14 +18,16 @@ def train(data_dir, epochs, batch_size):
         return
 
     print(f"Training data shape: {X_train.shape}")
-    print(f"Test data shape: {X_test.shape}")
+    if len(X_test) > 0:
+        print(f"Test data shape: {X_test.shape}")
+
+    if len(X_train) == 0:
+        print("No training data found. Exiting.")
+        return
 
     # 2. Build Model
     input_shape = X_train.shape[1:]
-    num_classes = len(set(y_train)) # Simple inference of class count
-    # Fallback if labels are not 0-indexed contiguous integers, but for dummy data it's fine.
-    # ideally we should pass this in or determine from dataset metadata
-    if num_classes < 2: num_classes = 5 # Default fallback
+    num_classes = len(SCP_CODES)
 
     print(f"Building model with input shape {input_shape} and {num_classes} classes...")
     model = build_cnn_model(input_shape, num_classes)
@@ -49,9 +52,12 @@ def train(data_dir, epochs, batch_size):
 
     # 4. Train
     print("Starting training...")
+
+    validation_data = (X_test, y_test) if len(X_test) > 0 else None
+
     history = model.fit(
         X_train, y_train,
-        validation_data=(X_test, y_test),
+        validation_data=validation_data,
         epochs=epochs,
         batch_size=batch_size,
         callbacks=callbacks
