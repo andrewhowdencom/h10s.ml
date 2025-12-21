@@ -26,3 +26,7 @@ logs/
 
 # Jupyter
 .ipynb_checkpoints
+
+# Input Data
+ptb-xl-1.0.3
+ptb-xl-1.0.3.zip
